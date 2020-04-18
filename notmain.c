@@ -184,7 +184,7 @@ void InputHandler(unsigned char input);
 int notmain ( void )
 {
     unsigned int ra = 0;
-    unsigned int rb = 0;
+    //unsigned int rb = 0;
     unsigned int rc = 0, rd = 0;
     /*
      * For the display I have to use the SPI Interface
@@ -246,13 +246,13 @@ int notmain ( void )
 		//Input
 		rd = rc;
 		for(ra=0; ra<4; ra++){
-			rb = GET32(GPSET0);
 			//COL Enable
-			PUT32(GPSET0, rb | cols[ra]);
-			for(ra=0;ra<0x100000;ra++) dummy(ra);
+			PUT32(GPSET0, cols[ra]);
+			//for(rb=0;rb<0x100000;rb++) dummy(rb);
 			rc = readInput(ra);
-			PUT32(GPCLR0, rb | cols[ra]);
-			if((rc != 0) && (rd != rc)){
+			PUT32(GPCLR0, cols[ra]);
+			//for(rb=0;rb<0x100000;rb++) dummy(rb);
+			if((rc != 0) && (rc != rd)){
 				//GFXColor((unsigned char)(rc & 0xFF));
 				InputHandler(rc);
 				break;
