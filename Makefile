@@ -19,11 +19,15 @@ clean :
 vectors.o : vectors.s
 	$(ARMGNU)-as $(AOPS) vectors.s -o vectors.o
 
+Font.o : Font.c
+	$(ARMGNU)-gcc $(COPS) -c Font.c -o Font.o
+
 notmain.o : notmain.c
 	$(ARMGNU)-gcc $(COPS) -c notmain.c -o notmain.o
 
-notmain.elf : memmap vectors.o notmain.o
-	$(ARMGNU)-ld vectors.o notmain.o -T memmap -o notmain.elf
+
+notmain.elf : memmap vectors.o notmain.o Font.o
+	$(ARMGNU)-ld vectors.o notmain.o Font.o -T memmap -o notmain.elf
 	$(ARMGNU)-objdump -D notmain.elf > notmain.list
 
 kernel.img : notmain.elf
