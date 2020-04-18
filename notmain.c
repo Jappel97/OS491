@@ -249,6 +249,7 @@ int notmain ( void )
 			rb = GET32(GPSET0);
 			//COL Enable
 			PUT32(GPSET0, rb | cols[ra]);
+			for(ra=0;ra<0x100000;ra++) dummy(ra);
 			rc = readInput(ra);
 			PUT32(GPCLR0, rb | cols[ra]);
 			if((rc != 0) && (rd != rc)){
@@ -257,7 +258,6 @@ int notmain ( void )
 				break;
 			}
 		}
-		
         FBRender();
     }
 
