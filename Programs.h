@@ -1,0 +1,31 @@
+#include "types.h"
+
+void shell(void);
+void SolveInputHandler(unsigned char input, char* inputBuffer);
+void MenuInputHandler(unsigned char input, menu* currentMenu, int* currTab, int* currEntry);	
+void GraphInputHandler(unsigned char input);
+void EntryInputHandler(unsigned char input, char* inputBuffer, queue* funcs);
+void mathMenuInit(menu* men);
+void varsMenuInit(menu* men);
+void statMenuInit(menu* men);
+void funcMenuInit(menu* men);
+void clearMenu(menu* men);
+double pop(stack* stk);
+int push(stack* stk, double item);
+double peek(stack* stk);
+thing dequeue(queue* q);
+void enqueue(queue* q, thing item);
+thing peekqueue(queue* q);
+void menuEntry(char* entry);
+queue INFtoRPN(char* infix, int MODE);
+double RPNResolve(queue RPN);
+void menuEntry(char* entry);
+void showEntries(menu* men, int currTab, int entry);
+void graph(queue func, int xSize, int ySize);
+double pixelToGraphX(int x, int xSize);
+double pixelToGraphY(int y, int ySize);
+int graphToPixelX(double x, int xSize);
+int graphToPixelY(double y, int ySize);
+double funcEval(queue RPN, double x);
+int KVGetValByKey(KVPair* dict, char search);
+void setList(int list, int item, double val);

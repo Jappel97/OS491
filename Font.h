@@ -3,4 +3,5 @@
 #define FONT_FRAME_HEIGHT 10
 
 extern const unsigned char font_data[65][10][8];
-extern const char keyCodes[48];
+extern const char* keyCodes[48];
+extern const char* keyCodes3[49];
