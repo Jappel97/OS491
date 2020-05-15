@@ -442,6 +442,10 @@ queue INFtoRPN(char* infix, int MODE){
 	toConvert = malloc(length * sizeof(char));
 	toConvert[0] = '\0';
 	int currentHighestPrecedance = -1;
+	//Fill the queue with Null items
+	for(int i = 0; i < length; i++){
+		enqueue(&RPN, (thing){.type = 1, .value = 0});
+	}
 	thing temp = (thing){.type = 0, .value = 0};
 	for(int i = 0; i < length; i++){
 		if((infix[i] >= 48 && infix[i] <= 57) || infix[i] == 46 || infix[i] == '_'){
@@ -450,8 +454,12 @@ queue INFtoRPN(char* infix, int MODE){
 		else if((infix[i] == 'X') && MODE == ENTRY){
 			if(strlen(toConvert) > 0){
 				currNum = atod(toConvert);
+				//Remove a null item from the queue
+				dequeue(&RPN);
+				//Add a real item to the queue
 				enqueue(&RPN, (thing){.type = 0, .value = currNum});
 			}
+			dequeue(&RPN);
 			enqueue(&RPN, (thing){.type = 2, .value = infix[i]});
 		}
 		else if((infix[i] >= 65) && (infix[i] <= 90)){
@@ -459,8 +467,10 @@ queue INFtoRPN(char* infix, int MODE){
 			//Also handle constants (such as e or pi).
 			if(strlen(toConvert) > 0){
 				currNum = atod(toConvert);
+				dequeue(&RPN);
 				enqueue(&RPN, (thing){.type = 0, .value = currNum});
 			}
+			dequeue(&RPN);
 			enqueue(&RPN, (thing){.type = 0, .value = vars[infix[i] - 65].value});
 		}
 		else if(infix[i] >= 97){
@@ -472,6 +482,7 @@ queue INFtoRPN(char* infix, int MODE){
 			//Operations always come after a number, so clear the last number
 			if(strlen(toConvert) > 0){
 				currNum = atod(toConvert);
+				dequeue(&RPN);
 				enqueue(&RPN, (thing){.type = 0, .value = currNum});
 				toConvert[0] = '\0';
 			}
@@ -481,6 +492,7 @@ queue INFtoRPN(char* infix, int MODE){
 				if(currentHighestPrecedance >= getPrecedence(infix[i]) && opStack.top > 0){
 					while(getPrecedence(peek(&opStack)) >= getPrecedence(infix[i]) && opStack.top > 0 && getPrecedence(peek(&opStack)) < 10){
 						temp = (thing){.type = 1, .value = pop(&opStack)};
+						dequeue(&RPN);
 						enqueue(&RPN, temp);
 					}
 				}
@@ -494,6 +506,7 @@ queue INFtoRPN(char* infix, int MODE){
 				if(currentHighestPrecedance >= getPrecedence(infix[i])){
 					while(getPrecedence(peek(&opStack)) >= getPrecedence(infix[i]) && opStack.top > 0 && getPrecedence(peek(&opStack))){
 						temp = (thing){.type = 1, .value = pop(&opStack)};
+						dequeue(&RPN);
 						enqueue(&RPN, temp);
 					}
 				}
@@ -507,6 +520,7 @@ queue INFtoRPN(char* infix, int MODE){
 				if(currentHighestPrecedance >= getPrecedence(infix[i])){
 					while(getPrecedence(peek(&opStack)) >= getPrecedence(infix[i]) && opStack.top > 0 && getPrecedence(peek(&opStack))){
 						temp = (thing){.type = 1, .value = pop(&opStack)};
+						dequeue(&RPN);
 						enqueue(&RPN, temp);
 					}
 				}
@@ -525,6 +539,7 @@ queue INFtoRPN(char* infix, int MODE){
 				//Just pop everything until we reach an open paren or a function (which are fancy open parens)
 				while(getPrecedence(peek(&opStack)) < 10){
 					temp = (thing){.type = 1, .value = pop(&opStack)};
+					dequeue(&RPN);
 					enqueue(&RPN, temp);
 				}
 				if(peek(&opStack) == '('){
@@ -532,6 +547,7 @@ queue INFtoRPN(char* infix, int MODE){
 				}
 				else{
 					temp = (thing){.type = 1, .value = pop(&opStack)};
+					dequeue(&RPN);
 					enqueue(&RPN, temp);
 				}
 			}
@@ -540,12 +556,14 @@ queue INFtoRPN(char* infix, int MODE){
 	//Queue the last number
 	if(strlen(toConvert) > 0){
 		currNum = atod(toConvert);
+		dequeue(&RPN);
 		enqueue(&RPN, (thing){.type = 0, .value = currNum});
 	}
 	//Clear the opstack
 	while(opStack.top > 0){
 		if(peek(&opStack) != '('){
 			temp = (thing){.type = 1, .value = pop(&opStack)};
+			dequeue(&RPN);
 			enqueue(&RPN, temp);
 		}
 	}
@@ -848,6 +866,19 @@ double funcEval(queue RPN, double x){
 		}
 		else if(temp.type == 2){
 			push(&solveStack, x);
+		}
+		//Return the item to the end of the queue
+		enqueue(&RPN, temp);
+	}
+	for(int i = 0; i < RPN.maxsize; i++){
+		temp = peekqueue(&RPN);
+		if(temp.type == 1 && temp.type == 0){
+			temp = dequeue(&RPN);
+			enqueue(temp);
+			continue;
+		}
+		else{
+			break;
 		}
 	}
 	double result = pop(&solveStack);
